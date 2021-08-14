@@ -25,49 +25,61 @@ end
 
 
 
-local function tmuxSystemCmd(use_tabs, open_session, project_dir, session_name)
+local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name)
 	local make_dir = makeDir(project_dir)
-	local nvim_open_mode = nvimOpenMode(open_session, project_dir)
+	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
 
-	local has_session = vim.fn.system("tmux has-session -t \":" .. project_dir .. "\"")
-	local session_exists = string.len(has_session) == 0
+	local has_session = vim.fn.system("tmux has-session -t\"" .. session_name .. "\"")
+	local session_not_exist = string.len(has_session) ~= 0
 
-	if session_exists then
-		return "tmux switch-client -t \":" .. project_dir .. "\""
-	else
-		return "tmux neww -n \"".. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\""
+	local has_window = vim.fn.system("tmux has-session -t \"" .. session_name .. ":" .. project_dir .. "\"")
+	local window_not_exist = string.len(has_window) ~= 0
+
+	local output_system_cmd = ""
+	if session_not_exist then
+		output_system_cmd = "tmux new -d -s \"" .. session_name .. "\" -n \"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
+	elseif window_not_exist then
+		-- tmux neww -n "hello" -t "yoo:"
+		output_system_cmd = "tmux neww -n \"" .. project_dir .. "\" -t \"" .. session_name .. ":\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
 	end
+	output_system_cmd = output_system_cmd .. "tmux switch-client -t \"" .. session_name .. ":" .. project_dir .. "\""
+	return output_system_cmd
 end
 
-local function linuxSystemCmd(use_tabs, open_session, project_dir)
+local function linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
 	local tab = ""
-	if use_tabs then 
-		tab = "--tab " 
+	if use_tabs then
+		tab = "--tab "
 	end
 
 	local make_dir = makeDir(project_dir)
-	local nvim_open_mode = nvimOpenMode(open_session, project_dir)
+	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
 
 	return	"gnome-terminal " .. tab .. "-- bash -c '".. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .. "; $SHELL'"
 end
 
+local function getSessionName(file_name)
+	file_name = vim.fn.substitute(file_name, ".txt", "", "g")
+	return vim.fn.substitute(file_name, "./", "", "g")
+end
+
 local function selectProject(prompt_bufnr, map)
-	local function switchSession(use_tabs, open_session)
+	local function switchSession(use_tabs, attempt_vim_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
 		-- P(content)
-		local session_name = content.filename
+		local session_name = getSessionName(content.filename)
 		local project_dir = content.text
 
 		local system_cmd
 		if vim.fn.getenv("TMUX") == vim.NIL then
-			system_cmd = linuxSystemCmd(use_tabs, open_session, project_dir)
+			system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
 			print(system_cmd)
 		else
-			system_cmd = tmuxSystemCmd(use_tabs, open_session, project_dir, session_name)
+			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name)
 			print(system_cmd)
 		end
 
-		vim.fn.system(system_cmd)
+		P(vim.fn.system(system_cmd))
 		require('telescope.actions').close(prompt_bufnr)
 	end
 
