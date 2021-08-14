@@ -39,7 +39,6 @@ local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name)
 	if session_not_exist then
 		output_system_cmd = "tmux new -d -s \"" .. session_name .. "\" -n \"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
 	elseif window_not_exist then
-		-- tmux neww -n "hello" -t "yoo:"
 		output_system_cmd = "tmux neww -n \"" .. project_dir .. "\" -t \"" .. session_name .. ":\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
 	end
 	output_system_cmd = output_system_cmd .. "tmux switch-client -t \"" .. session_name .. ":" .. project_dir .. "\""
