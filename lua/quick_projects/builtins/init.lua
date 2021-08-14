@@ -26,38 +26,16 @@ end
 
 
 local function tmuxSystemCmd(use_tabs, open_session, project_dir, session_name)
-
-	-- local tab = ""
-	-- if use_tabs then
-	-- 	tab = "w -n "
-	-- else
-	-- 	tab = "-session -d -s "
-	-- end
-	local tab = "w -n "
-	-- tmux has-session -t ":~/Desktop/josiah/neovim/quick_projects/"
-	-- tmux attach-session -d -t ":~/Desktop/josiah/neovim/quick_projects/"
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(open_session, project_dir)
 
-	-- local k = vim.fn.system("tmux has-session -t \":~/Desktop/josiah/neovim/quick_projects\"")
-	-- P(k)
-	-- P(type(k))
-	-- P(string.len(k))
-
-	-- local k = vim.fn.system("tmux has-session -t \"0:~/Desktop/josiah/neovim/quick_projects\"")
-	-- P(k)
-	-- P(type(k))
-	-- P(string.len(k))
-
 	local has_session = vim.fn.system("tmux has-session -t \":" .. project_dir .. "\"")
 	local session_exists = string.len(has_session) == 0
-	P(has_session)
-	P(session_exists)
 
 	if session_exists then
 		return "tmux switch-client -t \":" .. project_dir .. "\""
 	else
-		return "tmux new" .. tab .. "\"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\""
+		return "tmux neww -n \"".. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\""
 	end
 end
 
