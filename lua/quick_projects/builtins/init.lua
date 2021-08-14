@@ -103,8 +103,11 @@ end
 
 
 -- TODO:
--- make it so that you don't start a new window and session when the window is already there
 -- path shortener: some paths could be very long
+
+-- finished:
+-- make into a plugin, call it quick-projects-nvim
+-- make it so that you don't start a new window and session when the window is already there
 -- make it so that you can group windows within the session, as denoted by file-directory paths within the session name
 -- 		instead of:
 -- 			project.txt
@@ -117,10 +120,6 @@ end
 -- 				~/Desktop/..../elec1103
 -- 			work.txt
 -- 				~/Desktop/..../resumes
-
--- finished:
--- make into a plugin, call it quick-projects-nvim
-
 
 M.quickProjects = function()
 	require("telescope.builtin").live_grep({
