@@ -24,18 +24,41 @@ local function nvimOpenMode(open_session, project_dir)
 end
 
 
-local function tmuxSystemCmd(use_tabs, open_session, project_dir)
-	local tab = ""
-	if use_tabs then
-		tab = "w -n "
-	else
-		tab = "-session -d -s "
-	end
 
+local function tmuxSystemCmd(use_tabs, open_session, project_dir, session_name)
+
+	-- local tab = ""
+	-- if use_tabs then
+	-- 	tab = "w -n "
+	-- else
+	-- 	tab = "-session -d -s "
+	-- end
+	local tab = "w -n "
+	-- tmux has-session -t ":~/Desktop/josiah/neovim/quick_projects/"
+	-- tmux attach-session -d -t ":~/Desktop/josiah/neovim/quick_projects/"
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(open_session, project_dir)
 
-	return "tmux new" .. tab .. "\"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\""
+	-- local k = vim.fn.system("tmux has-session -t \":~/Desktop/josiah/neovim/quick_projects\"")
+	-- P(k)
+	-- P(type(k))
+	-- P(string.len(k))
+
+	-- local k = vim.fn.system("tmux has-session -t \"0:~/Desktop/josiah/neovim/quick_projects\"")
+	-- P(k)
+	-- P(type(k))
+	-- P(string.len(k))
+
+	local has_session = vim.fn.system("tmux has-session -t \":" .. project_dir .. "\"")
+	local session_exists = string.len(has_session) == 0
+	P(has_session)
+	P(session_exists)
+
+	if session_exists then
+		return "tmux switch-client -t \":" .. project_dir .. "\""
+	else
+		return "tmux new" .. tab .. "\"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\""
+	end
 end
 
 local function linuxSystemCmd(use_tabs, open_session, project_dir)
@@ -50,12 +73,11 @@ local function linuxSystemCmd(use_tabs, open_session, project_dir)
 	return	"gnome-terminal " .. tab .. "-- bash -c '".. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .. "; $SHELL'"
 end
 
-local function selectFolder(prompt_bufnr, map)
-	local function newTerminal(use_tabs, open_session)
+local function selectProject(prompt_bufnr, map)
+	local function switchSession(use_tabs, open_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
 		-- P(content)
-		-- local file_name = content.filename
-		-- P(file_name)
+		local session_name = content.filename
 		local project_dir = content.text
 
 		local system_cmd
@@ -63,7 +85,7 @@ local function selectFolder(prompt_bufnr, map)
 			system_cmd = linuxSystemCmd(use_tabs, open_session, project_dir)
 			print(system_cmd)
 		else
-			system_cmd = tmuxSystemCmd(use_tabs, open_session, project_dir)
+			system_cmd = tmuxSystemCmd(use_tabs, open_session, project_dir, session_name)
 			print(system_cmd)
 		end
 
@@ -73,25 +95,24 @@ local function selectFolder(prompt_bufnr, map)
 
 
 	map('n', '<C-s>', function()
-		newTerminal(false, true)
+		switchSession(false, true)
 	end)
 
 	map('i', '<C-s>', function()
-		newTerminal(true, true)
+		switchSession(true, true)
 	end)
 
 	map('i', '<C-t>', function()
-		newTerminal(true, false)
+		switchSession(true, false)
 	end)
 
 	map('n', '<C-t>', function()
-		newTerminal(false, false)
+		switchSession(false, false)
 	end)
 end
 
 
 -- TODO:
-
 -- make it so that you don't start a new window and session when the window is already there
 -- path shortener: some paths could be very long
 -- make it so that you can group windows within the session, as denoted by file-directory paths within the session name
@@ -117,7 +138,7 @@ M.quickProjects = function()
 		cwd = "~/.vim/quick_projects/",
 
 		attach_mappings = function(prompt_bufnr, map)
-			selectFolder(prompt_bufnr, map)
+			selectProject(prompt_bufnr, map)
 			return true
 		end
 	})
