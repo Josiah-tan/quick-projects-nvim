@@ -53,6 +53,9 @@ end
 local function selectFolder(prompt_bufnr, map)
 	local function newTerminal(use_tabs, open_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
+		-- P(content)
+		-- local file_name = content.filename
+		-- P(file_name)
 		local project_dir = content.text
 
 		local system_cmd
@@ -88,9 +91,9 @@ end
 
 
 -- TODO:
--- make into a plugin, call it quick-projects-nvim
--- path shortener: some paths could be very long
+
 -- make it so that you don't start a new window and session when the window is already there
+-- path shortener: some paths could be very long
 -- make it so that you can group windows within the session, as denoted by file-directory paths within the session name
 -- 		instead of:
 -- 			project.txt
@@ -103,6 +106,10 @@ end
 -- 				~/Desktop/..../elec1103
 -- 			work.txt
 -- 				~/Desktop/..../resumes
+
+-- finished:
+-- make into a plugin, call it quick-projects-nvim
+
 
 M.quickProjects = function()
 	require("telescope.builtin").live_grep({

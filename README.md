@@ -11,7 +11,5 @@ Here is a screening of the functionality that this plugin provides
 # Usage
 
 ```
-
 let g:enable_quick_projects_default_mappings = 1
-
 ```
