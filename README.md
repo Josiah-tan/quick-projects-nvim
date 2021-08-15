@@ -44,7 +44,9 @@ let g:enable_quick_projects_default_mappings = 1
 - here is a remap that does the same thing:
 
 ```
-nnoremap <leader>qp <cmd>lua require('quick_projects.builtins').quickProjects()<cr>
+if has('nvim')
+	nnoremap <leader>qp <cmd>lua require('quick_projects.builtins').quickProjects()<cr>
+end
 ```
 
 # Usage (advanced)
