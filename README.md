@@ -12,7 +12,7 @@ Here is a screening of the functionality that this plugin provides (TODO)
 - I'm also assuming that you are using vim-plug here
 	- but feel free to use whatever package manager that you like!
 
-```
+```viml
 " This is a requirement, which implements some useful window management
 "   items for neovim
 Plug 'nvim-lua/popup.nvim'
@@ -34,7 +34,7 @@ Plug 'Josiah-tan/quick-projects-nvim'
 - the mapping to open up quick projects is:
 	- <leader>qp
 
-```
+```viml
 let g:enable_quick_projects_default_mappings = 1
 ```
 
@@ -43,7 +43,7 @@ let g:enable_quick_projects_default_mappings = 1
 - if you want to you set your own remaps
 - here is a remap that does the same thing:
 
-```
+```viml
 if has('nvim')
 	nnoremap <leader>qp <cmd>lua require('quick_projects.builtins').quickProjects()<cr>
 end
@@ -58,7 +58,7 @@ end
 - you can checkout telescope's repository for all the defaults that are used
 - however here are some defaults that I personally use
 
-```
+```viml
 lua << EOF
 local actions = require("telescope.actions")
 require('telescope').setup {
