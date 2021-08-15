@@ -61,7 +61,7 @@ let g:enable_quick_projects_default_mappings = 1
 - After this press ctrl + t:
 	- to open this up as a directory view
 
-- if you selected "~/Desktop/personal/google_kickstart/", then it will create / change to a tmux session with name "personal", and window name "~/Desktop/personal/google_kickstart/"
+- if you selected "~/Desktop/personal/google\_kickstart/", then it will create / change to a tmux session with name "personal", and window name "~/Desktop/personal/google\_kickstart/"
 
 # Usage (medium)
 
