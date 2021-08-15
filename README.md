@@ -28,6 +28,7 @@ Plug 'Josiah-tan/quick-projects-nvim'
 ```
 
 # Usage (Easy)
+## Enabling Mappings
 
 - assuming that you have downloaded this plugin (and it's dependencies), you can now enable the mappings!
 	- by default the mappings are disabled
@@ -37,6 +38,30 @@ Plug 'Josiah-tan/quick-projects-nvim'
 ```viml
 let g:enable_quick_projects_default_mappings = 1
 ```
+
+## Creating Project Paths
+
+- create a folder structure that looks like this:
+
+- ~/.vim/quick\_projects
+	- university.txt
+		- ~/Desktop/uni/mechanics/
+		- ~/Desktop/uni/electrical/
+	- work.txt
+		- ~/Desktop/work/resumes/
+		- ~/Desktop/work/lectures/
+	- personal.txt
+		- ~/Desktop/personal/code/
+		- ~/Desktop/personal/google_kickstart/
+
+- when you run <leader>qp, and type "google" and you will see it pop up in the options
+
+- After this press ctrl + s:
+	- to open this up as a session
+- After this press ctrl + t:
+	- to open this up as a directory view
+
+- if you selected "~/Desktop/personal/google_kickstart/", then it will create / change to a tmux session with name "personal", and window name "~/Desktop/personal/google_kickstart/"
 
 # Usage (medium)
 
