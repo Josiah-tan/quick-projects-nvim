@@ -25,23 +25,23 @@ end
 
 
 
-local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name)
+local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
 
 	local has_session = vim.fn.system("tmux has-session -t\"" .. session_name .. "\"")
 	local session_not_exist = string.len(has_session) ~= 0
 
-	local has_window = vim.fn.system("tmux has-session -t \"" .. session_name .. ":" .. project_dir .. "\"")
+	local has_window = vim.fn.system("tmux has-session -t \"" .. session_name .. ":" .. window_name .. "\"")
 	local window_not_exist = string.len(has_window) ~= 0
 
 	local output_system_cmd = ""
 	if session_not_exist then
-		output_system_cmd = "tmux new -d -s \"" .. session_name .. "\" -n \"" .. project_dir .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
+		output_system_cmd = "tmux new -d -s \"" .. session_name .. "\" -n \"" .. window_name .. "\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
 	elseif window_not_exist then
-		output_system_cmd = "tmux neww -n \"" .. project_dir .. "\" -t \"" .. session_name .. ":\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
+		output_system_cmd = "tmux neww -n \"" .. window_name .. "\" -t \"" .. session_name .. ":\" \"" .. make_dir .. "cd " .. project_dir .. "; nvim " .. nvim_open_mode .."; $SHELL\" && "
 	end
-	output_system_cmd = output_system_cmd .. "tmux switch-client -t \"" .. session_name .. ":" .. project_dir .. "\""
+	output_system_cmd = output_system_cmd .. "tmux switch-client -t \"" .. session_name .. ":" .. window_name .. "\""
 	return output_system_cmd
 end
 
@@ -62,19 +62,25 @@ local function getSessionName(file_name)
 	return vim.fn.substitute(file_name, "./", "", "g")
 end
 
+local function getWindowName(project_dir)
+	-- fixes bug where . is a special character for tmux
+	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
+end
+
 local function selectProject(prompt_bufnr, map)
 	local function switchSession(use_tabs, attempt_vim_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
 		-- P(content)
 		local session_name = getSessionName(content.filename)
 		local project_dir = content.text
+		local window_name = getWindowName(project_dir)
 
 		local system_cmd
 		if vim.fn.getenv("TMUX") == vim.NIL then
 			system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
 			print(system_cmd)
 		else
-			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name)
+			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
 			print(system_cmd)
 		end
 
