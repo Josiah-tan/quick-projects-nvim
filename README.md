@@ -7,7 +7,7 @@ Here is a screening of the functionality that this plugin provides (TODO)
 # Plugin Dependencies
 
 - this requires you to get telescope and its own dependencies
-	- telescope is neovim 0.5 + only
+	- Note that telescope is neovim 0.5 + only
 		- so build your neovim from source, or get the latest release!
 - I'm also assuming that you are using vim-plug here
 	- but feel free to use whatever package manager that you like!
@@ -91,3 +91,8 @@ EOF
 
 ```
 
+# TODO (README)
+
+- add links to other repositories
+- add screening
+- add customisation
