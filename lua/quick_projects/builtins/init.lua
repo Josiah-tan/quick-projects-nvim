@@ -63,13 +63,13 @@ local function getSessionName(file_name)
 end
 
 local function getWindowName(project_dir)
-	-- fixes bug where you open try to open a window that has a prefix of another window name
+	-- fixes bug where you try to open a window that has a prefix of another window name
 		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
 		-- ~/.dotfiles/ (then try opening this)
 	project_dir = project_dir + " "
 	-- fixes bug where . is a special character for tmux
-		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
-		-- ~/.dotfiles/nvim/<dot>vim/ (assume that this is open)
+		-- ~/.dotfiles/nvim/.vim/ (this is the original)
+		-- ~/.dotfiles/nvim/<dot>vim/ (this is the replaced)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
