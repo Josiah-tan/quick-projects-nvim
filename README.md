@@ -135,6 +135,8 @@ nnoremap <leader>qp <cmd>lua RELOAD('quick_projects.builtins').quickProjects()<c
 
 # TODO (README)
 
+- add some testing procedures
 - add links to other repositories
 - add screening
 - add customisation
+
