@@ -116,6 +116,23 @@ EOF
 
 ```
 
+# Guidelines For Developers
+
+- remove the plugin?
+	- currently I'm doing this, but I'm sure there's a better way of managing everything
+- set rtp (runtime path) to the repository
+
+```viml
+" here's an example of how you could do this
+set rtp+=~/Desktop/josiah/neovim/quick_projects/
+```
+
+- then use a custom mapping like this to develop and test the code
+
+```viml
+nnoremap <leader>qp <cmd>lua RELOAD('quick_projects.builtins').quickProjects()<cr>
+```
+
 # TODO (README)
 
 - add links to other repositories
