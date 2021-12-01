@@ -145,7 +145,7 @@ M.quickProjects = function()
 			'-u',
 		},
 		prompt_title =  "quick projects >",
-		cwd = "~/.vim/quick_projects/",
+		cwd = "~/.config/.quick_projects/",
 
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map)

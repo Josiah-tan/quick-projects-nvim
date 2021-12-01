@@ -118,7 +118,7 @@ EOF
 
 # Guidelines For Developers
 
-- remove the plugin?
+- first uninstall the plugin (to prevent conflicts)?
 	- currently I'm doing this, but I'm sure there's a better way of managing everything
 - set rtp (runtime path) to the repository
 
