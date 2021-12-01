@@ -134,16 +134,6 @@ end
 
 M.quickProjects = function()
 	require("telescope.builtin").live_grep({
-		vimgrep_arguments = {
-			'rg',
-			'--color=never',
-			'--no-heading',
-			'--with-filename',
-			'--line-number',
-			'--column',
-			'--smart-case',
-			'-u',
-		},
 		prompt_title =  "quick projects >",
 		cwd = "~/.config/.quick_projects/",
 
