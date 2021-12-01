@@ -62,7 +62,15 @@ local function getSessionName(file_name)
 	return vim.fn.substitute(file_name, "./", "", "g")
 end
 
+local function compressDirectoryPath(path)
+	-- problem: compressing paths may lead to tmux window name collisions
+	-- note that in lua [[]] double brackets used to make it delimiting backslashes easier
+	-- return vim.fn.substitute(path, [[\(/[^/]*/\)$\|\(/\.\?.\)[^/]*]], [[\1\2]], "g")
+	return path
+end
+
 local function getWindowName(project_dir)
+	project_dir = compressDirectoryPath(project_dir)
 	-- fixes bug where you try to open a window that has a prefix of another window name
 		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
 		-- ~/.dotfiles/ (then try opening this)
