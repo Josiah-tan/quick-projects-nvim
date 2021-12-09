@@ -3,6 +3,7 @@ local M = {
 }
 
 M.setup = function(config)
+	-- overrides any configs
 	config = config or {}
 	M._config = M._config or {}
 	M._config = vim.tbl_deep_extend("force", M._config, config)
@@ -110,22 +111,29 @@ local function selectProject(prompt_bufnr, map, mappings)
 		require('telescope.actions').close(prompt_bufnr)
 	end
 
+	for _, v in pairs(mappings) do
+		-- print(k)
+		-- P(v)
+		map(v.mode, v.key, function()
+			switchSession(v.use_tabs, v.attempt_vim_session)
+		end)
+	end
 
-	map('n', '<C-s>', function()
-		switchSession(false, true)
-	end)
+	-- map('n', '<C-s>', function()
+	-- 	switchSession(false, true)
+	-- end)
 
-	map('i', '<C-s>', function()
-		switchSession(true, true)
-	end)
+	-- map('i', '<C-s>', function()
+	-- 	switchSession(true, true)
+	-- end)
 
-	map('i', '<C-t>', function()
-		switchSession(true, false)
-	end)
+	-- map('i', '<C-t>', function()
+	-- 	switchSession(true, false)
+	-- end)
 
-	map('n', '<C-t>', function()
-		switchSession(false, false)
-	end)
+	-- map('n', '<C-t>', function()
+	-- 	switchSession(false, false)
+	-- end)
 end
 
 
@@ -149,7 +157,7 @@ end
 -- 				~/Desktop/..../resumes
 
 M.quickProjects = function()
-	P(M)
+	-- P(M)
 	require("telescope.builtin").live_grep({
 		prompt_title =  M._config.prompt_title,
 		cwd = M._config.cwd,
