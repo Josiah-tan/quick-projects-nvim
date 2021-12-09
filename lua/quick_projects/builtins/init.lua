@@ -2,6 +2,13 @@ local M = {
 
 }
 
+M.setup = function(config)
+	config = config or {}
+	M._config = M._config or {}
+	M._config = vim.tbl_deep_extend("force", M._config, config)
+end
+
+
 local function makeDir(project_dir)
 	-- every number is "truthy" so 0 = true
 	local make_dir = ""
@@ -82,7 +89,7 @@ local function getWindowName(project_dir)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
-local function selectProject(prompt_bufnr, map)
+local function selectProject(prompt_bufnr, map, mappings)
 	local function switchSession(use_tabs, attempt_vim_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
 		-- P(content)
@@ -142,15 +149,17 @@ end
 -- 				~/Desktop/..../resumes
 
 M.quickProjects = function()
+	P(M)
 	require("telescope.builtin").live_grep({
-		prompt_title =  "quick projects >",
-		cwd = "~/.config/.quick_projects/",
+		prompt_title =  M._config.prompt_title,
+		cwd = M._config.cwd,
 
 		attach_mappings = function(prompt_bufnr, map)
-			selectProject(prompt_bufnr, map)
+			selectProject(prompt_bufnr, map, M._config.mappings)
 			return true
 		end
 	})
 end
+
 
 return M
