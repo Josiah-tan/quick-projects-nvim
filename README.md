@@ -65,7 +65,7 @@ let g:enable_quick_projects_default_mappings = 1
 
 # Usage (medium)
 
-- if you want to you set your own remaps
+- if you want to you can set your own remaps
 - here is a remap that does the same thing:
 
 ```viml

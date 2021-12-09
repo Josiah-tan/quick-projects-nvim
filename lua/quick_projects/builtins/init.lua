@@ -64,7 +64,8 @@ end
 
 local function compressDirectoryPath(path)
 	-- problem: compressing paths may lead to tmux window name collisions
-	-- note that in lua [[]] double brackets used to make it delimiting backslashes easier
+	-- an idea: create a tree for each character, then remove nodes that are not needed, then search through the tree and output the formatted strings to another file (probably a bit naive)
+	-- note that in lua [[]] double brackets used to make delimiting backslashes easier
 	-- return vim.fn.substitute(path, [[\(/[^/]*/\)$\|\(/\.\?.\)[^/]*]], [[\1\2]], "g")
 	return path
 end
@@ -151,6 +152,5 @@ M.quickProjects = function()
 		end
 	})
 end
-
 
 return M
