@@ -101,13 +101,12 @@ local function selectProject(prompt_bufnr, map)
 		local system_cmd
 		if vim.fn.getenv("TMUX") == vim.NIL then
 			system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
-			P("system_cmd : ", system_cmd )
 		else
 			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
-			P("system_cmd : ", system_cmd )
 		end
-
+		P("system_cmd : ", system_cmd )
 		P("vim.fn.system(system_cmd): ", vim.fn.system(system_cmd))
+
 		require('telescope.actions').close(prompt_bufnr)
 	end
 
