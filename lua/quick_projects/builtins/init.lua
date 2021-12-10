@@ -36,17 +36,11 @@ end
 local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
-	-- P("session_name: ", session_name)
-	-- P("window_name: ", window_name)
 	local has_session = vim.fn.system("tmux has-session -t\"" .. session_name .. "\"")
-	-- P("has_session : ", has_session )
 	local session_not_exist = string.len(has_session) ~= 0
-	-- P("session_not_exist : ", session_not_exist )
 
 	local has_window = vim.fn.system("tmux has-session -t \"" .. session_name .. ":" .. window_name .. "\"")
-	-- P("has_window : ", has_window )
 	local window_not_exist = string.len(has_window) ~= 0
-	-- P("window_not_exist : ", window_not_exist )
 
 	local output_system_cmd = ""
 	if session_not_exist then
@@ -85,12 +79,10 @@ end
 
 local function getWindowName(project_dir)
 	project_dir = compressDirectoryPath(project_dir)
-	P("project_dir : ", project_dir )
 	-- fixes bug where you try to open a window that has a prefix of another window name
 		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
 		-- ~/.dotfiles/ (then try opening this)
 	project_dir = string.format("%s ", project_dir)
-	P("project_dir : ", project_dir )
 	-- fixes bug where . is a special character for tmux
 		-- ~/.dotfiles/nvim/.vim/ (this is the original)
 		-- ~/.dotfiles/nvim/<dot>vim/ (this is the replaced)
@@ -98,7 +90,8 @@ local function getWindowName(project_dir)
 end
 
 local function GetMarkFile(config)
-    	return vim.fn.expand(config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir) .. "/" .. (config.file or M._config.generalMarks.file)
+	config = config or {} -- only happens when called by addQuickMark()
+	return vim.fn.expand(config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir) .. "/" .. (config.file or M._config.generalMarks.file)
 end
 
 local function addQuickMark(file_name, text)
@@ -106,25 +99,26 @@ local function addQuickMark(file_name, text)
 	-- P("output : ", output )
 	local output_file = GetMarkFile()
 	vim.fn.writefile({output}, output_file, "a")
+	P(string.format('writing "%s" to %s', output, output_file))
 end
 
 local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 	local session_name = getSessionName(content.filename)
 	local project_dir = content.text
 	local window_name = getWindowName(project_dir)
-	-- P("window_name : ", window_name )
 
 	local system_cmd
 	-- tmux gets first priority
-	P("tmux: ", tmux)
 	if tmux.enable and vim.fn.getenv("TMUX") ~= vim.NIL then
 		system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
 	elseif linux_terminal.enable then
 		system_cmd = linuxSystemCmd(linux_terminal.use_tabs, attempt_vim_session, project_dir)
 	end
-	P("system_cmd :", system_cmd)
-	local res = vim.fn.system(system_cmd)
-	P("res :", res)
+	P("exec system_cmd:", system_cmd)
+	if system_cmd then
+		local returned = vim.fn.system(system_cmd)
+		P("returned:", returned)
+	end
 end
 
 local function switchSessionFromMarks(tmux, linux_terminal, attempt_vim_session, raw_content)
@@ -145,13 +139,11 @@ local function selectProject(prompt_bufnr, map, qualname_builtin)
 		require('telescope.actions').close(prompt_bufnr)
 		return content
 	end
-
 	for _, v in pairs(M._config.mappings) do
 		map(v.mode, v.key, function()
 			local content = getContents()
-
 			if qualname_builtin == "quickProjects" then
-				if v.add_mark then
+				if v.tmux.add_mark then
 					addQuickMark(content.filename, content.text)
 				end
 				switchSession(v.tmux, v.linux_terminal, v.attempt_vim_session, content)
@@ -202,7 +194,6 @@ M.quickMarks = function(config)
 	-- update config if necessary
 	config = config or {}
 	config = vim.tbl_deep_extend("force", M._config.quickMarks, config)
-	P("config : ", config )
 
 	require("telescope.builtin").live_grep({
 		prompt_title =  config.prompt_title,
@@ -217,15 +208,9 @@ end
 M.navMark = function(config)
 	config = config or {}
 	config = vim.tbl_deep_extend("force", M._config.navMark, config)
-	P("config : ", config )
-
 	local output_file = GetMarkFile(config)
-	P("output_file : ", output_file )
-	local raw_content = vim.fn.system(string.format('sed -n %dp %s', config.idx, output_file), true)
-	P("raw_content : ", raw_content )
+	local raw_content = vim.fn.system(string.format('sed -n %dp %s', config.idx, output_file))
 	switchSessionFromMarks(config.tmux, config.linux_terminal, config.attempt_vim_session, raw_content)
-	-- switchSessionFromMarks(M._config.mark_attempt_vim_session, M._config.mark_use_tabs, raw_content)
--- switchSessionFromMarks(tmux, linux_terminal, attempt_vim_session, raw_content)
 end
 
 return M

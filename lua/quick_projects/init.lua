@@ -4,7 +4,7 @@ local M = {}
 
 M.setup = function(config)
 	config = config or {}
-	M._config = vim.tbl_deep_extend("force", {
+	M._config = M._config or {
 		debug_mode_on = false,
 		enable_global_mappings = false,
 		builtin_defaults = {
@@ -59,15 +59,20 @@ M.setup = function(config)
 					}
 				}},
 			}
-		}, config)
+		}
+
+		M._config = vim.tbl_deep_extend("force", M._config , config)
 		if M._config.enable_global_mappings then
 			vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
+			vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks()<CR>]], {noremap = true, silent = true, expr = false})
+			vim.api.nvim_set_keymap("n", "<Leader>qj", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 1})<CR>]], {noremap = true, silent = true, expr = false})
+			vim.api.nvim_set_keymap("n", "<Leader>qk", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 2})<CR>]], {noremap = true, silent = true, expr = false})
+			vim.api.nvim_set_keymap("n", "<Leader>ql", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 3})<CR>]], {noremap = true, silent = true, expr = false})
+			vim.api.nvim_set_keymap("n", "<Leader>q;", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 4})<CR>]], {noremap = true, silent = true, expr = false})
 		end
+
 		require("quick_projects.builtins").setup(M._config.builtin_defaults)
 		QuickProjectsDebugModeOn = M._config.debug_mode_on
-		-- require("quick_projects.globals").setup(M._config.debug_mode_on)
-		-- P("M._config.builtin_defaults: ", M._config.builtin_defaults)
-		-- P(M._config.builtin_defaults)
 	end
 
 
