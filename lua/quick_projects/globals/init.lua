@@ -26,7 +26,7 @@ P = function(v1, v2)
 	-- print("asdf")
 	if QuickProjectsDebugModeOn then
 		if v2 then
-			print(_P(v1) .. _P(v2))
+			print(_P(v1), _P(v2))
 			return v2
 		else
 			print(_P(v1))

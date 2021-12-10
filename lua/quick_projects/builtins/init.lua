@@ -36,12 +36,17 @@ end
 local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
-
+	-- P("session_name: ", session_name)
+	-- P("window_name: ", window_name)
 	local has_session = vim.fn.system("tmux has-session -t\"" .. session_name .. "\"")
+	-- P("has_session : ", has_session )
 	local session_not_exist = string.len(has_session) ~= 0
+	-- P("session_not_exist : ", session_not_exist )
 
 	local has_window = vim.fn.system("tmux has-session -t \"" .. session_name .. ":" .. window_name .. "\"")
+	-- P("has_window : ", has_window )
 	local window_not_exist = string.len(has_window) ~= 0
+	-- P("window_not_exist : ", window_not_exist )
 
 	local output_system_cmd = ""
 	if session_not_exist then
@@ -80,59 +85,79 @@ end
 
 local function getWindowName(project_dir)
 	project_dir = compressDirectoryPath(project_dir)
+	P("project_dir : ", project_dir )
 	-- fixes bug where you try to open a window that has a prefix of another window name
 		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
 		-- ~/.dotfiles/ (then try opening this)
-	project_dir = project_dir .. " "
+	project_dir = string.format("%s ", project_dir)
+	P("project_dir : ", project_dir )
 	-- fixes bug where . is a special character for tmux
 		-- ~/.dotfiles/nvim/.vim/ (this is the original)
 		-- ~/.dotfiles/nvim/<dot>vim/ (this is the replaced)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
-local function selectProject(prompt_bufnr, map)
-	local function switchSession(use_tabs, attempt_vim_session)
+local function GetMarkFile()
+    	return vim.fn.expand(M._config.cwd) .. M._config.quick_marks_dir .. "/" .. M._config.quick_marks_file
+end
+
+local function addQuickMark(file_name, text)
+	local output = file_name .. M._config.mark_split_character .. text
+	-- P("output : ", output )
+	local output_file = GetMarkFile()
+	vim.fn.writefile({output}, output_file, "a")
+end
+
+local function switchSession(attempt_vim_session, use_tabs, content)
+	local session_name = getSessionName(content.filename)
+	local project_dir = content.text
+	local window_name = getWindowName(project_dir)
+	-- P("window_name : ", window_name )
+
+	local system_cmd
+	if vim.fn.getenv("TMUX") == vim.NIL then
+		system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
+	else
+		system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
+	end
+	P("system_cmd : ", system_cmd )
+	local res = vim.fn.system(system_cmd)
+	P("res : ", res )
+end
+
+local function switchSessionFromMarks(attempt_vim_session, use_tabs, raw_content)
+	local content = {}
+	content.filename = vim.fn.substitute(raw_content, M._config.mark_split_character .. '.*', '', '')
+	content.text = vim.fn.substitute(raw_content, '.*' .. M._config.mark_split_character, '', '')
+	-- for some strange reason there is this pesky d10 ascii character that is on this string
+	-- local asc = string.byte(string.sub(content.text, -1))
+	-- P("asc : ", asc )
+	content.text = vim.fn.substitute(content.text, '[\\d10]$', '', '')
+	switchSession(attempt_vim_session, use_tabs, content)
+end
+
+
+local function selectProject(prompt_bufnr, map, qualname_builtin)
+	local function getContents()
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
-		-- P(content)
-		local session_name = getSessionName(content.filename)
-		local project_dir = content.text
-		local window_name = getWindowName(project_dir)
-
-		local system_cmd
-		if vim.fn.getenv("TMUX") == vim.NIL then
-			system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
-		else
-			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
-		end
-		P("system_cmd : ", system_cmd )
-		P("vim.fn.system(system_cmd): ", vim.fn.system(system_cmd))
-
 		require('telescope.actions').close(prompt_bufnr)
+		return content
 	end
 
 	for _, v in pairs(M._config.mappings) do
-		-- print(k)
-		-- P(v)
 		map(v.mode, v.key, function()
-			switchSession(v.use_tabs, v.attempt_vim_session)
+			local content = getContents()
+
+			if qualname_builtin == "quickProjects" then
+				if v.add_mark then
+					addQuickMark(content.filename, content.text)
+				end
+				switchSession(v.attempt_vim_session, v.use_tabs, content)
+			elseif qualname_builtin == "quickMarks" then
+				switchSessionFromMarks(v.attempt_vim_session, v.use_tabs, content.text)
+			end
 		end)
 	end
-
-	-- map('n', '<C-s>', function()
-	-- 	switchSession(false, true)
-	-- end)
-
-	-- map('i', '<C-s>', function()
-	-- 	switchSession(true, true)
-	-- end)
-
-	-- map('i', '<C-t>', function()
-	-- 	switchSession(true, false)
-	-- end)
-
-	-- map('n', '<C-t>', function()
-	-- 	switchSession(false, false)
-	-- end)
 end
 
 
@@ -155,18 +180,46 @@ end
 -- 			work.txt
 -- 				~/Desktop/..../resumes
 
-M.quickProjects = function()
-	-- P(M)
+M.quickProjects = function(config)
+	-- update config if necessary
+	config = config or {}
+	M._config = vim.tbl_deep_extend("force", M._config, config)
+
 	require("telescope.builtin").live_grep({
 		prompt_title =  M._config.prompt_title,
-		cwd = M._config.cwd,
+		cwd = M._config.cwd .. M._config.quick_projects_dir,
 
 		attach_mappings = function(prompt_bufnr, map)
-			selectProject(prompt_bufnr, map)
+			selectProject(prompt_bufnr, map, "quickProjects")
 			return true
 		end
 	})
 end
 
+M.quickMarks = function(config)
+	-- update config if necessary
+	config = config or {}
+	M._config = vim.tbl_deep_extend("force", M._config, config)
+
+	require("telescope.builtin").live_grep({
+		prompt_title =  M._config.prompt_title,
+		cwd = M._config.cwd .. M._config.quick_marks_dir,
+
+		attach_mappings = function(prompt_bufnr, map)
+			selectProject(prompt_bufnr, map, "quickMarks")
+			return true
+		end
+	})
+end
+
+M.navMark = function(config)
+	config = config or {}
+	M._config = vim.tbl_deep_extend("force", M._config, config)
+
+	local idx = M._config.idx
+	local output_file = GetMarkFile()
+	local raw_content = vim.fn.system(string.format('sed -n %dp %s', idx, output_file), true)
+	switchSessionFromMarks(M._config.mark_attempt_vim_session, M._config.mark_use_tabs, raw_content)
+end
 
 return M

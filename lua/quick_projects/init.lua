@@ -10,6 +10,12 @@ M.setup = function(config)
 		builtin_defaults = {
 			prompt_title =  "quick projects >",
 			cwd = "~/.config/.quick_projects/",
+			quick_projects_dir = "projects",
+			quick_marks_dir = "marks",
+			quick_marks_file = "marks.txt",
+			mark_split_character = "@",
+			mark_use_tabs = false,
+			attempt_vim_session = true,
 			mappings = {
 			{
 				mode = 'n',
