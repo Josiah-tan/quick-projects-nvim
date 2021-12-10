@@ -90,7 +90,7 @@ local function getWindowName(project_dir)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
-local function selectProject(prompt_bufnr, map, mappings)
+local function selectProject(prompt_bufnr, map)
 	local function switchSession(use_tabs, attempt_vim_session)
 		local content = require('telescope.actions.state').get_selected_entry(prompt_bufnr)
 		-- P(content)
@@ -101,17 +101,17 @@ local function selectProject(prompt_bufnr, map, mappings)
 		local system_cmd
 		if vim.fn.getenv("TMUX") == vim.NIL then
 			system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
-			print(system_cmd)
+			P("system_cmd : ", system_cmd )
 		else
 			system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
-			print(system_cmd)
+			P("system_cmd : ", system_cmd )
 		end
 
-		P(vim.fn.system(system_cmd))
+		P("vim.fn.system(system_cmd): ", vim.fn.system(system_cmd))
 		require('telescope.actions').close(prompt_bufnr)
 	end
 
-	for _, v in pairs(mappings) do
+	for _, v in pairs(M._config.mappings) do
 		-- print(k)
 		-- P(v)
 		map(v.mode, v.key, function()
@@ -163,7 +163,7 @@ M.quickProjects = function()
 		cwd = M._config.cwd,
 
 		attach_mappings = function(prompt_bufnr, map)
-			selectProject(prompt_bufnr, map, M._config.mappings)
+			selectProject(prompt_bufnr, map)
 			return true
 		end
 	})
