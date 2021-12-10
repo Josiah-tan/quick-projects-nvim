@@ -31,7 +31,7 @@ M.setup = function(config)
 	require("quick_projects.builtins").setup(M._config.builtin_defaults)
 	QuickProjectsDebugModeOn = M._config.debug_mode_on
 	-- require("quick_projects.globals").setup(M._config.debug_mode_on)
-	P("M._config.builtin_defaults: ", M._config.builtin_defaults)
+	-- P("M._config.builtin_defaults: ", M._config.builtin_defaults)
 	-- P(M._config.builtin_defaults)
 end
 
