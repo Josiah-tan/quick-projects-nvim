@@ -97,43 +97,45 @@ local function getWindowName(project_dir)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
-local function GetMarkFile()
-    	return vim.fn.expand(M._config.cwd) .. M._config.quick_marks_dir .. "/" .. M._config.quick_marks_file
+local function GetMarkFile(config)
+    	return vim.fn.expand(config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir) .. "/" .. (config.file or M._config.generalMarks.file)
 end
 
 local function addQuickMark(file_name, text)
-	local output = file_name .. M._config.mark_split_character .. text
+	local output = file_name .. M._config.generalMarks.split_character .. text
 	-- P("output : ", output )
 	local output_file = GetMarkFile()
 	vim.fn.writefile({output}, output_file, "a")
 end
 
-local function switchSession(attempt_vim_session, use_tabs, content)
+local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 	local session_name = getSessionName(content.filename)
 	local project_dir = content.text
 	local window_name = getWindowName(project_dir)
 	-- P("window_name : ", window_name )
 
 	local system_cmd
-	if vim.fn.getenv("TMUX") == vim.NIL then
-		system_cmd = linuxSystemCmd(use_tabs, attempt_vim_session, project_dir)
-	else
+	-- tmux gets first priority
+	P("tmux: ", tmux)
+	if tmux.enable and vim.fn.getenv("TMUX") ~= vim.NIL then
 		system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
+	elseif linux_terminal.enable then
+		system_cmd = linuxSystemCmd(linux_terminal.use_tabs, attempt_vim_session, project_dir)
 	end
-	P("system_cmd : ", system_cmd )
+	P("system_cmd :", system_cmd)
 	local res = vim.fn.system(system_cmd)
-	P("res : ", res )
+	P("res :", res)
 end
 
-local function switchSessionFromMarks(attempt_vim_session, use_tabs, raw_content)
+local function switchSessionFromMarks(tmux, linux_terminal, attempt_vim_session, raw_content)
 	local content = {}
-	content.filename = vim.fn.substitute(raw_content, M._config.mark_split_character .. '.*', '', '')
-	content.text = vim.fn.substitute(raw_content, '.*' .. M._config.mark_split_character, '', '')
+	content.filename = vim.fn.substitute(raw_content, M._config.generalMarks.split_character .. '.*', '', '')
+	content.text = vim.fn.substitute(raw_content, '.*' .. M._config.generalMarks.split_character, '', '')
 	-- for some strange reason there is this pesky d10 ascii character that is on this string
 	-- local asc = string.byte(string.sub(content.text, -1))
 	-- P("asc : ", asc )
 	content.text = vim.fn.substitute(content.text, '[\\d10]$', '', '')
-	switchSession(attempt_vim_session, use_tabs, content)
+	switchSession(tmux, linux_terminal, attempt_vim_session, content)
 end
 
 
@@ -152,9 +154,9 @@ local function selectProject(prompt_bufnr, map, qualname_builtin)
 				if v.add_mark then
 					addQuickMark(content.filename, content.text)
 				end
-				switchSession(v.attempt_vim_session, v.use_tabs, content)
+				switchSession(v.tmux, v.linux_terminal, v.attempt_vim_session, content)
 			elseif qualname_builtin == "quickMarks" then
-				switchSessionFromMarks(v.attempt_vim_session, v.use_tabs, content.text)
+				switchSessionFromMarks(v.tmux, v.linux_terminal, v.attempt_vim_session, content.text)
 			end
 		end)
 	end
@@ -183,11 +185,11 @@ end
 M.quickProjects = function(config)
 	-- update config if necessary
 	config = config or {}
-	M._config = vim.tbl_deep_extend("force", M._config, config)
+	config = vim.tbl_deep_extend("force", M._config.quickProjects, config)
 
 	require("telescope.builtin").live_grep({
-		prompt_title =  M._config.prompt_title,
-		cwd = M._config.cwd .. M._config.quick_projects_dir,
+		prompt_title =  config.prompt_title,
+		cwd = (config.cwd or M._config.cwd) .. config.dir,
 
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickProjects")
@@ -199,12 +201,12 @@ end
 M.quickMarks = function(config)
 	-- update config if necessary
 	config = config or {}
-	M._config = vim.tbl_deep_extend("force", M._config, config)
+	config = vim.tbl_deep_extend("force", M._config.quickMarks, config)
+	P("config : ", config )
 
 	require("telescope.builtin").live_grep({
-		prompt_title =  M._config.prompt_title,
-		cwd = M._config.cwd .. M._config.quick_marks_dir,
-
+		prompt_title =  config.prompt_title,
+		cwd = (config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir),
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickMarks")
 			return true
@@ -214,12 +216,16 @@ end
 
 M.navMark = function(config)
 	config = config or {}
-	M._config = vim.tbl_deep_extend("force", M._config, config)
+	config = vim.tbl_deep_extend("force", M._config.navMark, config)
+	P("config : ", config )
 
-	local idx = M._config.idx
-	local output_file = GetMarkFile()
-	local raw_content = vim.fn.system(string.format('sed -n %dp %s', idx, output_file), true)
-	switchSessionFromMarks(M._config.mark_attempt_vim_session, M._config.mark_use_tabs, raw_content)
+	local output_file = GetMarkFile(config)
+	P("output_file : ", output_file )
+	local raw_content = vim.fn.system(string.format('sed -n %dp %s', config.idx, output_file), true)
+	P("raw_content : ", raw_content )
+	switchSessionFromMarks(config.tmux, config.linux_terminal, config.attempt_vim_session, raw_content)
+	-- switchSessionFromMarks(M._config.mark_attempt_vim_session, M._config.mark_use_tabs, raw_content)
+-- switchSessionFromMarks(tmux, linux_terminal, attempt_vim_session, raw_content)
 end
 
 return M
