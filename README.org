@@ -1,0 +1,141 @@
+* What Is quick-projects-nvim?
+
+- This is a neovim plugin used to navigate quickly between projects
+- It is designed specifically for tmux, with partial support for linux
+  terminals
+
+* TODO Screening
+- gotta get this done
+
+* Plugin Dependencies
+
+- this requires you to get telescope and its own dependencies
+  - Note that telescope is neovim 0.5 + only
+    - so build your neovim from source, or get the latest release!
+- I'm also assuming that you are using
+  [[https://github.com/junegunn/vim-plug][vim-plug]] here
+  - but feel free to use whatever package manager that you like!
+
+#+BEGIN_SRC vim
+    " This is a requirement, which implements some useful window management
+    "   items for neovim
+    Plug 'nvim-lua/popup.nvim'
+    Plug 'nvim-lua/plenary.nvim'
+
+    " fuzzy finder etc...
+    Plug 'nvim-telescope/telescope.nvim'    
+    " compiled fzy sorter (hence faster)
+    Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+    "Plugin for quick_projects
+    Plug 'Josiah-tan/quick-projects-nvim'
+#+END_SRC
+
+* Guidelines for absolute beginners (if you've used a nvim plugin before feel free to skip!)
+
+- If this is your first ever plugin that you have downloaded and
+  configured, don't worry, we've all been there before, this section is
+  just for you!
+
+** Method 1 (using .lua files)
+
+- I recommend learning from this
+  [[file:website][https://github.com/nanotee/nvim-lua-guide#where-to-put-lua-files]].
+
+** Method 2 (using the .vimrc)
+
+- Of course you can also just chuck all the configurations in the vimrc,
+  and embed them as lua scripts
+- So here's an example where we call the setup function and enable the
+  global mappings in your .vimrc
+
+#+BEGIN_SRC vim
+    lua << EOS
+    require('quick_projects').setup(
+    {
+        enable_global_mappings = true
+    })
+    EOS
+#+END_SRC
+
+* Usage (Basic)
+** Enabling Mappings
+
+- assuming that you have downloaded this plugin (and its dependencies),
+  you can now enable the global mappings!
+
+  - by default, the global mappings are disabled, so that you can make
+    your own if you want to
+
+#+BEGIN_SRC lua
+    vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks()<CR>]], {noremap = true, silent = true, expr = false})
+
+    vim.api.nvim_set_keymap("n", "<Leader>qj", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 1})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>qk", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 2})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>ql", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 3})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>q;", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 4})<CR>]], {noremap = true, silent = true, expr = false})
+#+END_SRC
+
+** Creating Project Paths
+
+- create a folder structure that looks like this (note that some of the content is in .txt files):
+
+- ~/.config/.quick\under{}projects/
+  - projects/
+    - university.txt
+      + ~/Desktop/uni/mechanics/
+      + ~/Desktop/uni/electrical/
+    - work.txt
+      + ~/Desktop/work/resumes/
+      + ~/Desktop/work/lectures/
+    - personal.txt
+      + ~/Desktop/personal/code/
+      + ~/Desktop/personal/google\under{}kickstart/
+  - marks/
+    - marks.txt
+
+- when you run require('quick\under{}projects.builtins').quickProjects(), and type "google" and you will see the directory that you want pop up in the options
+
+- After this:
+	- press ctrl + t:
+		- open vim in this directory with "vim ."
+	- press ctrl + s:
+		- open session in vim in this directory with vim -S session.vim (assuming that you did a :mks session earlier on)
+			- if there is no session, then behave like ctrl + t
+	- press alt + m:
+		- open session in vim in this directory and add a project mark to marks.txt
+			- if mark already exists, behave like ctrl + s
+
+- what happens with tmux?
+- If you selected "~/Desktop/personal/google\under{}kickstart/"
+	- tmux will create / change to
+		- a tmux session with name "personal"
+		- a window with name "~/Desktop/personal/google\under{}kickstart/"
+
+* Guidelines For Developers
+
+- first uninstall the plugin (to prevent conflicts)?
+
+  - currently I'm doing this, but I'm sure there's a better way of
+    managing everything
+
+- set rtp (runtime path) that of the repository
+
+#+BEGIN_SRC vim
+" here's an example of how you could do this 
+set rtp+=~/Desktop/josiah/neovim/quick_projects/
+#+END_SRC
+
+- then use a custom mapping like this to develop and test the code 
+	- note that RELOAD performs a fresh read of any changes that you make to the builtins file
+
+#+BEGIN_SRC lua
+vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua RELOAD('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
+#+END_SRC
+
+* TODO (README)
+- [ ] add some testing procedures
+- [X] add links to other repositories
+- [ ] add screening
+- [X] add customisation
