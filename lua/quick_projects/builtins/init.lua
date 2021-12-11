@@ -32,8 +32,22 @@ local function nvimOpenMode(open_session, project_dir)
 end
 
 
+local function invalidSessionWindowName(name)
+	if type(name) ~= "string" then
+		return true
+	end
+	for _, value in pairs({"", "null"}) do
+		if value == name then
+			return true
+		end
+	end
+	return false
+end
 
 local function tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
+	if invalidSessionWindowName(session_name) or invalidSessionWindowName(window_name) then
+		return ""
+	end
 	local make_dir = makeDir(project_dir)
 	local nvim_open_mode = nvimOpenMode(attempt_vim_session, project_dir)
 	local has_session = vim.fn.system("tmux has-session -t\"" .. session_name .. "\"")
@@ -96,10 +110,15 @@ end
 
 local function addQuickMark(file_name, text)
 	local output = file_name .. M._config.generalMarks.split_character .. text
-	-- P("output : ", output )
 	local output_file = GetMarkFile()
-	vim.fn.writefile({output}, output_file, "a")
-	P(string.format('writing "%s" to %s', output, output_file))
+	local grep_search = vim.fn.system(string.format('grep "^%s$" %s', output, output_file))
+	local length_string = string.len(grep_search)
+	if length_string  == 0 then
+		vim.fn.writefile({output}, output_file, "a")
+		P(string.format('writing "%s" to %s', output, output_file))
+	else
+		P("already written content to marks")
+	end
 end
 
 local function switchSession(tmux, linux_terminal, attempt_vim_session, content)

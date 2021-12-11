@@ -47,7 +47,19 @@ M.setup = function(config)
 				},
 				{
 					mode = 'i',
-					key = '<C-m>',
+					key = '<C-t>',
+					attempt_vim_session = false,
+					tmux = {
+						enable = true,
+					},
+					linux_terminal = {
+						enable = true,
+						use_tabs = true,
+					}
+				},
+				{
+					mode = 'i',
+					key = [[<M-m>]],
 					attempt_vim_session = true,
 					tmux = {
 						enable = true,
