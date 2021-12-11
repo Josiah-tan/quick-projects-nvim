@@ -232,14 +232,14 @@ vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_proje
 
 *** mappings
 - this is the configuration for the mappings when opening up telescopes buffer for selection
-  - mode: this can be "i" for or insert "n" for normal
-  - key: the key binding used to trigger a specific action, used <C-s> to denote control + s, <M-m> to denote alt + m
-  - attempt_vim_session: attempts to open a vim session
-  - tmux.enable: true => create a new tmux session (not to be confused with a vim session) upon selection, false => do not create a tmux session
+	- mode: this can be "i" for or insert "n" for normal
+	- key: the key binding used to trigger a specific action, used <C-s> to denote control + s, <M-m> to denote alt + m
+	- attempt_vim_session: attempts to open a vim session
+	- tmux.enable: true => create a new tmux session (not to be confused with a vim session) upon selection, false => do not create a tmux session
 		- takes priority over the linux_terminal configuration
-  - tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (in the navMark function)
-  - linux_terminal.enable: true => create a new linux terminal (deprecated)
-  - linux_terminal.use_tabs: true => open the new linux terminal as a tab, false => open new linux terminal as window
+	- tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (in the navMark function)
+	- linux_terminal.enable: true => create a new linux terminal (deprecated)
+	- linux_terminal.use_tabs: true => open the new linux terminal as a tab, false => open new linux terminal as window
 
 #+BEGIN_SRC lua
 require('quick_projects').setup(
@@ -290,7 +290,12 @@ require('quick_projects').setup(
 
 *** navMark setup
 - Configuration for navigating projects that have been marked previously
-  - attempt_vim_session: see [[#Enabling-Mappings]]
+	- idx: the line to select from marks.txt
+	- attempt_vim_session: see [[#mappings]]
+	- tmux.enable: see [[#mappings]]
+	- tmux.add_mark: this would not make much sense to include because we are viewing the marks.txt file
+	- tmux_terminal.enable: see [[#mappings]]
+	- tmux_terminal.use_tabs: see [[#mappings]]
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
