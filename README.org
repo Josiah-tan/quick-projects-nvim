@@ -344,4 +344,4 @@ vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua RELOAD('quick_projec
 - [X] add links to other repositories
 - [ ] add screening
 - [X] add customisation capabilities
-- [ ] add more coded examples
+- [X] add more coded examples
