@@ -130,6 +130,22 @@ and type "google" and you will see the directory that you want pop up in the opt
 		- a tmux session with name "personal"
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
+- So what can you do with that mark that you just created (assuming that you took the alt + m route)?
+  	- There are two functions that you can call:
+#+BEGIN_SRC vim
+	:lua require('quick_projects.builtins').navMark({idx = 1})
+#+END_SRC
+		- this function allows you to immediately navigate to that mark that you just created (assuming that this is the first mark that you've ever made)
+		- In general, you'd want to pass different a idx for various keymaps so that you can immediately navigate to different projects with ease
+
+#+BEGIN_SRC vim
+	:lua require('quick_projects.builtins').quickMarks()
+#+END_SRC
+		- This function behaves like quickProjects(), but is built just for fuzzy finding through the marks.txt file
+		- could be useful for:
+			- refactoring / sorting the marks (you would have to press enter to enter a buffer that would allow you do to so)
+	 		- checking what order the marks are stored
+
 * Customised Setup
 - For this section, the setups written are the defaults (so you don't need to include these blocks of code in your configuration, they are just there so that you can customise if you want to)
 - The setup function can also be called multiple times to override values (if you wanted to)
@@ -158,7 +174,7 @@ require('quick_projects').setup(
 *** quickProjects Setup
 - this is the configuration for the quickProjects() function in the builtins
 - prompt_title: the prompt for input
-- dir: directory in which all the files for quick projects
+- dir: directory to store all files containing directory paths
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
@@ -176,6 +192,123 @@ require('quick_projects').setup(
 vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects({prompt_title =  "qp:", dir = "projects"})<CR>]], {noremap = true, silent = true, expr = false})
 #+END_SRC
 
+*** generalMarks Setup
+- the general configuration for creating project marks
+- file: file to store the marks
+- dir: directory to store the file
+- split_character: character used to split the text and its original file located in the directory:
+	- builtin_defaults.quickProjects.dir
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		generalMarks = {
+			dir = "marks",
+			file = "marks.txt",
+			split_character = "@",
+		},
+	}
+})
+#+END_SRC
+
+*** quickMarks Setup
+- this is the configuration for the quickMarks() function in the builtins
+- prompt_title: the prompt for input
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		quickMarks = {
+			prompt_title =  "quick marks >",
+		},
+	}
+})
+#+END_SRC
+- You can also call the quickMarks() function with your own configuration to override that from the setup
+	- In the example code, prompt_title would be "qm:" rather than the default "quick marks >"
+#+BEGIN_SRC lua
+vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks({prompt_title = "qm:"})<CR>]], {noremap = true, silent = true, expr = false})
+#+END_SRC
+
+*** mappings (telescope)
+- this is the configuration for the mappings when opening up telescopes buffer for selection
+  - mode: this can be "i" for or insert "n" for normal
+  - key: the key binding used to trigger a specific action, used <C-s> to denote control + s, <M-m> to denote alt + m
+  - <<attemptvimsession>> attempt_vim_session: attempts to open a vim session
+  - tmux.enable: true => create a new tmux session (not to be confused with a vim session) upon selection, false => do not create a tmux session
+		- takes priority over the linux_terminal configuration
+  - tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (in the navMark function)
+  - linux_terminal.enable: true => create a new linux terminal (deprecated)
+  - linux_terminal.use_tabs: true => open the new linux terminal as a tab, false => open new linux terminal as window
+
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		mappings = {
+			{
+				mode = 'i',
+				key = '<C-s>',
+				attempt_vim_session = true,
+				tmux = {
+					enable = true,
+				},
+				linux_terminal = {
+					enable = true,
+					use_tabs = true,
+				}
+			},
+			{
+				mode = 'i',
+				key = '<C-t>',
+				attempt_vim_session = false,
+				tmux = {
+					enable = true,
+				},
+				linux_terminal = {
+					enable = true,
+					use_tabs = true,
+				}
+			},
+			{
+				mode = 'i',
+				key = [[<M-m>]],
+				attempt_vim_session = true,
+				tmux = {
+					enable = true,
+					add_mark = true
+				},
+				linux_terminal = {
+					enable = true,
+					use_tabs = true,
+				}
+			}}
+#+END_SRC
+
+- note: the enter key, by default opens up the file so that you can edit the mark order / directory path entries.
+
+
+*** navMark setup
+- Configuration for navigating projects that have been marked previously
+  - attempt_vim_session: [[attemptvimsession]]
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		navMark = {
+			idx = 1,
+			attempt_vim_session = true,
+			tmux = {
+				enable = true,
+			},
+			linux_terminal = {
+				enable = true,
+				use_tabs = false,
+			}
+		},
+	}
+})
+#+END_SRC
 
 * Guidelines For Developers
 
