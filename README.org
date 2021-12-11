@@ -7,7 +7,7 @@
 * Screening
 - Get a GIF or video to show this plugin
 
-* Plugin Dependencies
+* Plugin Dependencies and Installation
 
 - this requires you to get telescope and its own dependencies
   - Note that telescope is neovim 0.5 + only
@@ -44,28 +44,37 @@
 
 ** Method 2 (using the .vimrc)
 
-- Of course you can also just chuck all the configurations in the vimrc,
-  and embed them as lua scripts
-- So here's an example where we call the setup function and enable the
-  global mappings in your .vimrc
+- Of course you can also just chuck all the configurations in the vimrc, and embed them as lua scripts
+- Here's an example of how you could call the lua function "print", within vimscript: 
 
 #+BEGIN_SRC vim
     lua << EOS
-    require('quick_projects').setup(
-    {
-        enable_global_mappings = true
-    })
+	print("hello world")
     EOS
 #+END_SRC
 
-* Usage (Basic)
+- For the rest of the documentation, lua injection notation will be excluded (lua << EOS and EOS)
+
+* Basic Usage
+- For this section it is assumed that the plugin has been installed
+
+** Basic Setup
+
+- So here's an example to call the setup function and enable the global mappings in your .vimrc
+
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	enable_global_mappings = true
+})
+#+END_SRC
+
+- by default:
+	- global mappings are disabled to ensure no conflicts with other keybindings, upon installation
+
 ** Enabling Mappings
 
-- assuming that you have downloaded this plugin (and its dependencies),
-  you can now enable the global mappings!
-
-  - by default, the global mappings are disabled, so that you can make
-    your own if you want to
+- The code below shows the global mappings that are created if enabled
 
 #+BEGIN_SRC lua
     vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
@@ -79,7 +88,7 @@
 
 ** Creating Project Paths
 
-- create a folder structure that looks like this (note that some of the content is in .txt files):
+- create a folder structure that looks like this (note that some of the use of .txt files):
 
 - ~/.config/.quick\under{}projects/
   - projects/
@@ -95,9 +104,17 @@
   - marks/
     - marks.txt
 
-- when you run require('quick\under{}projects.builtins').quickProjects(), and type "google" and you will see the directory that you want pop up in the options
+** Usage Tutorial
 
-- After this:
+- run the command in vim (within tmux)
+
+#+BEGIN_SRC vim
+:lua require('quick_projects.builtins').quickProjects()
+#+END_SRC
+
+and type "google" and you will see the directory that you want pop up in the options
+
+- After this you can do the following (by default):
 	- press ctrl + t:
 		- open vim in this directory with "vim ."
 	- press ctrl + s:
@@ -113,13 +130,14 @@
 		- a tmux session with name "personal"
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
+	
+
+* Customised Usage
 * Guidelines For Developers
 
 - first uninstall the plugin (to prevent conflicts)?
-
   - currently I'm doing this, but I'm sure there's a better way of
     managing everything
-
 - set rtp (runtime path) that of the repository
 
 #+BEGIN_SRC vim
@@ -127,8 +145,8 @@
 set rtp+=~/Desktop/josiah/neovim/quick_projects/
 #+END_SRC
 
-- then use a custom mapping like this to develop and test the code 
-	- note that RELOAD performs a fresh read of any changes that you make to the builtins file
+- then use a custom mapping to develop and test the code as shown below
+	- note that RELOAD performs a fresh read of any changes that you make to the builtins file in the example
 
 #+BEGIN_SRC lua
 vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua RELOAD('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
