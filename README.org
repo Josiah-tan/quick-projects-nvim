@@ -10,12 +10,12 @@
 
 * Plugin Dependencies and Installation
 
-- this requires you to get telescope and its own dependencies
+- Firstly, get telescope and its own dependencies
   - Note that telescope is neovim 0.5 + only
     - so build your neovim from source, or get the latest release!
 - I'm also assuming that you are using
   [[https://github.com/junegunn/vim-plug][vim-plug]] here
-  - but feel free to use whatever package manager that you like!
+  - but feel free to use whatever plugin manager that you like!
 
 #+BEGIN_SRC vim
     " This is a requirement, which implements some useful window management
@@ -54,7 +54,7 @@
     EOS
 #+END_SRC
 
-- For the rest of the documentation, lua injection notation will be excluded (i.e. lua << EOS and EOS)
+- For the rest of the documentation, lua injection notation will be excluded (i.e. the surrouding lua << EOS and EOS)
 
 * Basic Usage
 - For this section it is assumed that the plugin has been installed
@@ -70,7 +70,7 @@ require('quick_projects').setup(
 #+END_SRC
 
 - by default:
-	- global mappings are disabled to ensure no conflicts with other keybindings, upon installation
+	- global mappings are disabled to ensure no conflicts with other keybindings upon installation
 
 ** Enabling Mappings
 
@@ -88,7 +88,7 @@ require('quick_projects').setup(
 
 ** Creating Project Paths
 
-- create a folder structure that looks like this (note that some of the use of .txt files):
+- create a folder structure that looks like this (note the use of .txt files):
 
 - ~/.config/.quick\under{}projects/
   - projects/
@@ -104,15 +104,16 @@ require('quick_projects').setup(
   - marks/
     - marks.txt
 
-** Usage Tutorial
+** Quick Tutorial
 
-- run the command in vim (within tmux)
+- Run the following command in vim (within tmux)
 
 #+BEGIN_SRC vim
 :lua require('quick_projects.builtins').quickProjects()
 #+END_SRC
 
-and type "google" and you will see the directory that you want pop up in the options
+- now type something and you will see the directory that you want pop up in the options
+  	- for example, using my [[#creating-project-paths][folder structure]]
 
 - After this you can do the following (by default):
 	- press ctrl + t:
