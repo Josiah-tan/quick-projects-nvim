@@ -130,10 +130,12 @@ and type "google" and you will see the directory that you want pop up in the opt
 		- a tmux session with name "personal"
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
-* Customised Usage
+* Customised Setup
+- For this section, the setups written are the defaults (so you don't need to include these blocks of code in your configuration, they are just there so that you can customise if you want to)
+- The setup function can also be called multiple times to override values (if you wanted to)
 ** Global Setup
 - debug_mode_on: true => gives some information about what the plugin is doing, false => no information printed
-- enable_global_mappings: true => default global mappings enabled [[#Enabling-Mappings]], false => no mappings made
+- enable_global_mappings: true => default global mappings enabled see [[#Enabling-Mappings]], false => no mappings made
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
@@ -141,6 +143,39 @@ require('quick_projects').setup(
 	debug_mode_on = false,
 })
 #+END_SRC
+
+** Builtins setup
+- cwd: the root directory to store of all the projects 
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		cwd = "~/.config/.quick_projects/",
+	}
+})
+#+END_SRC
+
+*** quickProjects Setup
+- this is the configuration for the quickProjects() function in the builtins
+- prompt_title: the prompt for input
+- dir: directory in which all the files for quick projects
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	builtin_defaults = {
+		quickProjects = {
+			prompt_title =  "quick projects >",
+			dir = "projects",
+		},
+	}
+})
+#+END_SRC
+- can also call the quickProjects() function with your own configuration to override that from the setup
+	- In the example code, prompt_title would be "qp:" rather than the default "quick projects >"
+#+BEGIN_SRC lua
+vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects({prompt_title =  "qp:", dir = "projects"})<CR>]], {noremap = true, silent = true, expr = false})
+#+END_SRC
+
 
 * Guidelines For Developers
 
