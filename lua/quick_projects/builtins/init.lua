@@ -1,14 +1,10 @@
+local _config = require("quick_projects.builtins.config")._config
+-- print(config)
+-- P(_config)
+
 local M = {
 
 }
-
-M.setup = function(config)
-	-- overrides any configs
-	config = config or {}
-	M._config = M._config or {}
-	M._config = vim.tbl_deep_extend("force", M._config, config)
-end
-
 
 local function makeDir(project_dir)
 	-- every number is "truthy" so 0 = true
@@ -105,11 +101,11 @@ end
 
 local function GetMarkFile(config)
 	config = config or {} -- only happens when called by addQuickMark()
-	return vim.fn.expand(config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir) .. "/" .. (config.file or M._config.generalMarks.file)
+	return vim.fn.expand(config.cwd or _config.cwd) .. (config.dir or _config.generalMarks.dir) .. "/" .. (config.file or _config.generalMarks.file)
 end
 
 local function addQuickMark(file_name, text)
-	local output = file_name .. M._config.generalMarks.split_character .. text
+	local output = file_name .. _config.generalMarks.split_character .. text
 	local output_file = GetMarkFile()
 	local grep_search = vim.fn.system(string.format('grep "^%s$" %s', output, output_file))
 	local length_string = string.len(grep_search)
@@ -138,12 +134,17 @@ local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 		local returned = vim.fn.system(system_cmd)
 		P("returned:", returned)
 	end
+	-- P("_config: ", _config)
+	-- P(require("quick_projects.builtins.config")._config)
+	-- P(_config)
+	-- print(_config)
+	-- P(require("quick_projects.builtins.config")._config)
 end
 
 local function switchSessionFromMarks(tmux, linux_terminal, attempt_vim_session, raw_content)
 	local content = {}
-	content.filename = vim.fn.substitute(raw_content, M._config.generalMarks.split_character .. '.*', '', '')
-	content.text = vim.fn.substitute(raw_content, '.*' .. M._config.generalMarks.split_character, '', '')
+	content.filename = vim.fn.substitute(raw_content, _config.generalMarks.split_character .. '.*', '', '')
+	content.text = vim.fn.substitute(raw_content, '.*' .. _config.generalMarks.split_character, '', '')
 	-- for some strange reason there is this pesky d10 ascii character that is on this string
 	-- local asc = string.byte(string.sub(content.text, -1))
 	-- P("asc : ", asc )
@@ -158,7 +159,7 @@ local function selectProject(prompt_bufnr, map, qualname_builtin)
 		require('telescope.actions').close(prompt_bufnr)
 		return content
 	end
-	for _, v in pairs(M._config.mappings) do
+	for _, v in pairs(_config.mappings) do
 		map(v.mode, v.key, function()
 			local content = getContents()
 			if qualname_builtin == "quickProjects" then
@@ -196,11 +197,12 @@ end
 M.quickProjects = function(config)
 	-- update config if necessary
 	config = config or {}
-	config = vim.tbl_deep_extend("force", M._config.quickProjects, config)
+	-- config = vim.tbl_deep_extend("force", _config.quickProjects, config)
+	config = vim.tbl_deep_extend("force", _config.quickProjects, config)
 
 	require("telescope.builtin").live_grep({
 		prompt_title =  config.prompt_title,
-		cwd = (config.cwd or M._config.cwd) .. config.dir,
+		cwd = (config.cwd or _config.cwd) .. config.dir,
 
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickProjects")
@@ -212,11 +214,11 @@ end
 M.quickMarks = function(config)
 	-- update config if necessary
 	config = config or {}
-	config = vim.tbl_deep_extend("force", M._config.quickMarks, config)
+	config = vim.tbl_deep_extend("force", _config.quickMarks, config)
 
 	require("telescope.builtin").live_grep({
 		prompt_title =  config.prompt_title,
-		cwd = (config.cwd or M._config.cwd) .. (config.dir or M._config.generalMarks.dir),
+		cwd = (config.cwd or _config.cwd) .. (config.dir or _config.generalMarks.dir),
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickMarks")
 			return true
@@ -226,7 +228,7 @@ end
 
 M.navMark = function(config)
 	config = config or {}
-	config = vim.tbl_deep_extend("force", M._config.navMark, config)
+	config = vim.tbl_deep_extend("force", _config.navMark, config)
 	local output_file = GetMarkFile(config)
 	local raw_content = vim.fn.system(string.format('sed -n %dp %s', config.idx, output_file))
 	switchSessionFromMarks(config.tmux, config.linux_terminal, config.attempt_vim_session, raw_content)

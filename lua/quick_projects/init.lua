@@ -5,8 +5,8 @@ local M = {}
 M.setup = function(config)
 	config = config or {}
 	M._config = M._config or {
-		debug_mode_on = false,
 		enable_global_mappings = false,
+		debug_mode_on = false,
 		builtin_defaults = {
 			cwd = "~/.config/.quick_projects/",
 			quickProjects = {
@@ -83,7 +83,8 @@ M.setup = function(config)
 			vim.api.nvim_set_keymap("n", "<Leader>q;", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 4})<CR>]], {noremap = true, silent = true, expr = false})
 		end
 
-		require("quick_projects.builtins").setup(M._config.builtin_defaults)
+		require("quick_projects.builtins.config").setup(M._config.builtin_defaults)
+		-- require("quick_projects.builtins").setup(M._config.builtin_defaults)
 		QuickProjectsDebugModeOn = M._config.debug_mode_on
 	end
 
