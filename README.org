@@ -53,11 +53,10 @@
     EOS
 #+END_SRC
 
-- For the rest of the documentation, lua injection notation will be excluded (lua << EOS and EOS)
+- For the rest of the documentation, lua injection notation will be excluded (i.e. lua << EOS and EOS)
 
 * Basic Usage
 - For this section it is assumed that the plugin has been installed
-
 ** Basic Setup
 
 - So here's an example to call the setup function and enable the global mappings in your .vimrc
@@ -130,9 +129,18 @@ and type "google" and you will see the directory that you want pop up in the opt
 		- a tmux session with name "personal"
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
-	
-
 * Customised Usage
+** Global Setup
+- $debug_mode_on$: gives some information about what the plugin is doing
+-
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	debug_mode_on = false,
+	enable_global_mappings = false,
+})
+#+END_SRC
+
 * Guidelines For Developers
 
 - first uninstall the plugin (to prevent conflicts)?
