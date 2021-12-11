@@ -113,11 +113,11 @@ require('quick_projects').setup(
 #+END_SRC
 
 - now type something and you will see the directory that you want pop up in the options
-  	- for example, using my [[#creating-project-paths][folder structure]]
+  	- for example, using my [[#creating-project-paths][folder structure]], I can type "mechanics", and it will show up
 
 - After this you can do the following (by default):
 	- press ctrl + t:
-		- open vim in this directory with "vim ."
+		- open vim in this directory with "vim ." in a new window and/or session
 	- press ctrl + s:
 		- open session in vim in this directory with vim -S session.vim (assuming that you did a :mks session earlier on)
 			- if there is no session, then behave like ctrl + t
@@ -125,14 +125,14 @@ require('quick_projects').setup(
 		- open session in vim in this directory and add a project mark to marks.txt
 			- if mark already exists, behave like ctrl + s
 
-- what happens with tmux?
-- If you selected "~/Desktop/personal/google\under{}kickstart/"
+- So what happened with tmux when we use these keybindings?
+- If you selected "~/Desktop/personal/google\under{}kickstart/" for example,
 	- tmux will create / change to
 		- a tmux session with name "personal"
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
 - So what can you do with that mark that you just created (assuming that you took the alt + m route)?
-  	- There are two functions that you can call:
+  	- There are now two functions that you can call:
 #+BEGIN_SRC vim
 	:lua require('quick_projects.builtins').navMark({idx = 1})
 #+END_SRC
@@ -143,16 +143,17 @@ require('quick_projects').setup(
 	:lua require('quick_projects.builtins').quickMarks()
 #+END_SRC
 		- This function behaves like quickProjects(), but is built just for fuzzy finding through the marks.txt file
-		- could be useful for:
+		- Could be useful for:
 			- refactoring / sorting the marks (you would have to press enter to enter a buffer that would allow you do to so)
 	 		- checking what order the marks are stored
 
 * Customised Setup
-- For this section, the setups written are the defaults (so you don't need to include these blocks of code in your configuration, they are just there so that you can customise if you want to)
+- For this section, the setups written are the defaults 
+	- you don't need to include these blocks of code in your configuration, they are just there so that you can customise if you want to
 - The setup function can also be called multiple times to override values (if you wanted to)
 ** Global Setup
 - debug_mode_on: true => gives some information about what the plugin is doing, false => no information printed
-- enable_global_mappings: true => default global mappings enabled see [[#Enabling-Mappings]], false => no mappings made
+- enable_global_mappings: true => default global mappings enabled see [[#Enabling-Mappings]], false => no mappings are made
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
@@ -162,7 +163,7 @@ require('quick_projects').setup(
 #+END_SRC
 
 ** Builtins setup
-- cwd: the root directory to store of all the projects 
+- cwd: the root directory to store the marks and projects
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
@@ -173,7 +174,7 @@ require('quick_projects').setup(
 #+END_SRC
 
 *** quickProjects Setup
-- this is the configuration for the quickProjects() function in the builtins
+- configuration for the builtin quickProjects() function
 - prompt_title: the prompt for input
 - dir: directory to store all files containing directory paths
 #+BEGIN_SRC lua
@@ -187,7 +188,7 @@ require('quick_projects').setup(
 	}
 })
 #+END_SRC
-- can also call the quickProjects() function with your own configuration to override that from the setup
+- You can also call the quickProjects() function with your own configuration to override that received from the setup
 	- In the example code, prompt_title would be "qp:" rather than the default "quick projects >"
 #+BEGIN_SRC lua
 vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects({prompt_title =  "qp:", dir = "projects"})<CR>]], {noremap = true, silent = true, expr = false})
@@ -199,6 +200,7 @@ vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_proje
 - dir: directory to store the file
 - split_character: character used to split the text and its original file located in the directory:
 	- builtin_defaults.quickProjects.dir
+	- This character should be a character that is not used in file paths to avoid problems
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
@@ -213,7 +215,7 @@ require('quick_projects').setup(
 #+END_SRC
 
 *** quickMarks Setup
-- this is the configuration for the quickMarks() function in the builtins
+- The configuration for the builtin quickMarks() function
 - prompt_title: the prompt for input
 #+BEGIN_SRC lua
 require('quick_projects').setup(
@@ -232,15 +234,15 @@ vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_proje
 #+END_SRC
 
 *** mappings
-- this is the configuration for the mappings when opening up telescopes buffer for selection
-	- mode: this can be "i" for or insert "n" for normal
+- Configuration of mappings that can be used when viewing telescope's buffer for selection
+	- mode: this can be "i" for or insert, "n" for normal
 	- key: the key binding used to trigger a specific action, used <C-s> to denote control + s, <M-m> to denote alt + m
 	- attempt_vim_session: attempts to open a vim session
 	- tmux.enable: true => create a new tmux session (not to be confused with a vim session) upon selection, false => do not create a tmux session
-		- takes priority over the linux_terminal configuration
-	- tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (in the navMark function)
+		- note that this takes priority over the linux_terminal configuration
+	- tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (e.g. the navMark function)
 	- linux_terminal.enable: true => create a new linux terminal (deprecated)
-	- linux_terminal.use_tabs: true => open the new linux terminal as a tab, false => open new linux terminal as window
+	- linux_terminal.use_tabs: true => open the new linux terminal as a tab, false => open new linux terminal as window (deprecated)
 
 #+BEGIN_SRC lua
 require('quick_projects').setup(
@@ -286,7 +288,9 @@ require('quick_projects').setup(
 			}}
 #+END_SRC
 
-- note: the enter key, by default opens up the file so that you can edit the mark order / directory path entries.
+- note: the enter key, by default opens up the file so that you can edit:
+	- /projects: directory path entries
+	- /marks: the mark order and delete entries 
 
 
 *** navMark setup
@@ -321,7 +325,7 @@ require('quick_projects').setup(
 - first uninstall the plugin (to prevent conflicts)?
   - currently I'm doing this, but I'm sure there's a better way of
     managing everything
-- set rtp (runtime path) that of the repository
+- set rtp (runtime path) to that of the repository
 
 #+BEGIN_SRC vim
 " here's an example of how you could do this 
@@ -329,7 +333,7 @@ set rtp+=~/Desktop/josiah/neovim/quick_projects/
 #+END_SRC
 
 - then use a custom mapping to develop and test the code as shown below
-	- note that RELOAD performs a fresh read of any changes that you make to the builtins file in the example
+	- note that RELOAD performs a fresh read of any changes that you make to the builtins .lua file in the example
 
 #+BEGIN_SRC lua
 vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua RELOAD('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
