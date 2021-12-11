@@ -230,11 +230,11 @@ require('quick_projects').setup(
 vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks({prompt_title = "qm:"})<CR>]], {noremap = true, silent = true, expr = false})
 #+END_SRC
 
-*** mappings (telescope)
+*** mappings
 - this is the configuration for the mappings when opening up telescopes buffer for selection
   - mode: this can be "i" for or insert "n" for normal
   - key: the key binding used to trigger a specific action, used <C-s> to denote control + s, <M-m> to denote alt + m
-  - <<attemptvimsession>> attempt_vim_session: attempts to open a vim session
+  - attempt_vim_session: attempts to open a vim session
   - tmux.enable: true => create a new tmux session (not to be confused with a vim session) upon selection, false => do not create a tmux session
 		- takes priority over the linux_terminal configuration
   - tmux.add_mark: true => adds mark to builtin_defaults.generalMarks.file for later usage (in the navMark function)
@@ -290,7 +290,7 @@ require('quick_projects').setup(
 
 *** navMark setup
 - Configuration for navigating projects that have been marked previously
-  - attempt_vim_session: [[attemptvimsession]]
+  - attempt_vim_session: see [[#Enabling-Mappings]]
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
