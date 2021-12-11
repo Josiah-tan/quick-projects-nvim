@@ -1,3 +1,4 @@
+#+OPTIONS: ^:nil
 * What Is quick-projects-nvim?
 
 - This is a neovim plugin used to navigate quickly between projects
@@ -131,7 +132,7 @@ and type "google" and you will see the directory that you want pop up in the opt
 
 * Customised Usage
 ** Global Setup
-- debug\_mode\_on: gives some information about what the plugin is doing
+- debug_mode_on: gives some information about what the plugin is doing
 -
 #+BEGIN_SRC lua
 require('quick_projects').setup(
