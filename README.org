@@ -3,7 +3,7 @@
 
 - This is a neovim plugin used to navigate quickly between projects
 - It is designed specifically for tmux
-	- there is partial support for linux terminals, but this is deprecated
+	- there is partial support for linux terminals (when not in tmux), but this is deprecated
 
 * Screening
 - Get a GIF or video to show this plugin
@@ -39,7 +39,7 @@
 
 ** Method 1 (using .lua files)
 
-- I recommend learning from this [[https://github.com/nanotee/nvim-lua-guide#where-to-put-lua-files][website]].
+- I recommend learning how to use these from this [[https://github.com/nanotee/nvim-lua-guide#where-to-put-lua-files][website]].
 
 ** Method 2 (using the .vimrc)
 
