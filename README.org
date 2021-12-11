@@ -133,7 +133,7 @@ and type "google" and you will see the directory that you want pop up in the opt
 * Customised Usage
 ** Global Setup
 - debug_mode_on: true => gives some information about what the plugin is doing, false => no information printed
-- enable_global_mappings: true => default global mappings enabled [[**Enabling Mappings]], false => no mappings made
+- enable_global_mappings: true => default global mappings enabled [[Enabling Mappings]], false => no mappings made
 #+BEGIN_SRC lua
 require('quick_projects').setup(
 {
