@@ -2,19 +2,18 @@
 * What Is quick-projects-nvim?
 
 - This is a neovim plugin used to navigate quickly between projects
-- It is designed specifically for tmux, with partial support for linux
-  terminals
+- It is designed specifically for tmux
+	- there is partial support for linux terminals, but this is deprecated
 
 * Screening
 - Get a GIF or video to show this plugin
 
 * Plugin Dependencies and Installation
 
-- Firstly, get telescope and its own dependencies
+- Telescope and its dependencies
   - Note that telescope is neovim 0.5 + only
     - so build your neovim from source, or get the latest release!
-- I'm also assuming that you are using
-  [[https://github.com/junegunn/vim-plug][vim-plug]] here
+- Here is an example using [[https://github.com/junegunn/vim-plug][vim-plug]] here
   - but feel free to use whatever plugin manager that you like!
 
 #+BEGIN_SRC vim
@@ -40,8 +39,7 @@
 
 ** Method 1 (using .lua files)
 
-- I recommend learning from this
-  [[file:website][https://github.com/nanotee/nvim-lua-guide#where-to-put-lua-files]].
+- I recommend learning from this [[https://github.com/nanotee/nvim-lua-guide#where-to-put-lua-files][website]].
 
 ** Method 2 (using the .vimrc)
 
@@ -58,37 +56,9 @@
 
 * Basic Usage
 - For this section it is assumed that the plugin has been installed
-** Basic Setup
-
-- So here's an example to call the setup function and enable the global mappings in your .vimrc
-
-#+BEGIN_SRC lua
-require('quick_projects').setup(
-{
-	enable_global_mappings = true
-})
-#+END_SRC
-
-- by default:
-	- global mappings are disabled to ensure no conflicts with other keybindings upon installation
-
-** Enabling Mappings
-
-- The code below shows the global mappings that are created if enabled
-
-#+BEGIN_SRC lua
-    vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
-    vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks()<CR>]], {noremap = true, silent = true, expr = false})
-
-    vim.api.nvim_set_keymap("n", "<Leader>qj", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 1})<CR>]], {noremap = true, silent = true, expr = false})
-    vim.api.nvim_set_keymap("n", "<Leader>qk", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 2})<CR>]], {noremap = true, silent = true, expr = false})
-    vim.api.nvim_set_keymap("n", "<Leader>ql", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 3})<CR>]], {noremap = true, silent = true, expr = false})
-    vim.api.nvim_set_keymap("n", "<Leader>q;", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 4})<CR>]], {noremap = true, silent = true, expr = false})
-#+END_SRC
-
 ** Creating Project Paths
-
-- create a folder structure that looks like this (note the use of .txt files):
+- The prerequisite is to create a folder structure that looks like this (note the use of .txt files):
+	- initially, the marks.txt file is left empty
 
 - ~/.config/.quick\under{}projects/
   - projects/
@@ -106,6 +76,7 @@ require('quick_projects').setup(
 
 ** Quick Tutorial
 
+- After you have created the project paths
 - Run the following command in vim (within tmux)
 
 #+BEGIN_SRC vim
@@ -124,6 +95,7 @@ require('quick_projects').setup(
 	- press alt + m:
 		- open session in vim in this directory and add a project mark to marks.txt
 			- if mark already exists, behave like ctrl + s
+	- For more information, see [[#mappings]] to see how these are configured
 
 - So what happened with tmux when we use these keybindings?
 - If you selected "~/Desktop/personal/google\under{}kickstart/" for example,
@@ -132,20 +104,53 @@ require('quick_projects').setup(
 		- a window with name "~/Desktop/personal/google\under{}kickstart/"
 
 - So what can you do with that mark that you just created (assuming that you took the alt + m route)?
-  	- There are now two functions that you can call:
+  	- This is one function that you can call:
 #+BEGIN_SRC vim
 	:lua require('quick_projects.builtins').navMark({idx = 1})
 #+END_SRC
 		- this function allows you to immediately navigate to that mark that you just created (assuming that this is the first mark that you've ever made)
 		- In general, you'd want to pass different a idx for various keymaps so that you can immediately navigate to different projects with ease
-
+		- For more information, see [[#navmark-setup]]
+  	- This is another function that you can call:
 #+BEGIN_SRC vim
 	:lua require('quick_projects.builtins').quickMarks()
 #+END_SRC
-		- This function behaves like quickProjects(), but is built just for fuzzy finding through the marks.txt file
+		- This function works like quickProjects(), but is built just for fuzzy finding through the marks.txt file
 		- Could be useful for:
 			- refactoring / sorting the marks (you would have to press enter to enter a buffer that would allow you do to so)
-	 		- checking what order the marks are stored
+			- checking what order the marks are stored
+	 	- for more information see [[#quickmarks-setup]]
+
+** Basic Setup
+
+- Of course, it's a pain to have to call these functions every time you want to do something
+	- let's go through some ways that we can create mappings!
+- So here's an example that calls the setup function to enable the global mappings
+
+#+BEGIN_SRC lua
+require('quick_projects').setup(
+{
+	enable_global_mappings = true
+})
+#+END_SRC
+
+- by default
+	- global mappings are disabled to ensure no conflicts with other keybindings upon installation
+
+** Enabling Mappings
+
+- The code below shows the global mappings that are created if enabled
+- Feel free to manually remap these if you wish
+
+#+BEGIN_SRC lua
+    vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickProjects()<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>qm", [[ <Esc><Cmd>lua require('quick_projects.builtins').quickMarks()<CR>]], {noremap = true, silent = true, expr = false})
+
+    vim.api.nvim_set_keymap("n", "<Leader>qj", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 1})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>qk", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 2})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>ql", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 3})<CR>]], {noremap = true, silent = true, expr = false})
+    vim.api.nvim_set_keymap("n", "<Leader>q;", [[ <Esc><Cmd>lua require('quick_projects.builtins').navMark({idx = 4})<CR>]], {noremap = true, silent = true, expr = false})
+#+END_SRC
 
 * Customised Setup
 - For this section, the setups written are the defaults 
