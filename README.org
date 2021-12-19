@@ -6,7 +6,9 @@
 	- there is partial support for linux terminals (when not in tmux), but this is deprecated
 
 * Screening
-- Get a GIF or video to show this plugin
+- [https://youtube.com/playlist?list=PL2NasvrjkBtEOjI8bGDCFwgFOI9-owtoL][youtube playlist]
+	- The first video introduces concepts that lead to the development of this plugin
+	- The second video shows how this plugin can be used
 
 * Plugin Dependencies and Installation
 
@@ -347,6 +349,6 @@ vim.api.nvim_set_keymap("n", "<Leader>qp", [[ <Esc><Cmd>lua RELOAD('quick_projec
 * README TODO
 - [ ] add some testing procedures
 - [X] add links to other repositories
-- [ ] add screening
+- [X] add screening
 - [X] add customisation capabilities
 - [X] add more coded examples
