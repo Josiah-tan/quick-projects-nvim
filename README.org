@@ -6,7 +6,7 @@
 	- there is partial support for linux terminals (when not in tmux), but this is deprecated
 
 * Screening
-- [https://youtube.com/playlist?list=PL2NasvrjkBtEOjI8bGDCFwgFOI9-owtoL][youtube playlist]
+- [[https://youtube.com/playlist?list=PL2NasvrjkBtEOjI8bGDCFwgFOI9-owtoL][youtube playlist]]
 	- The first video introduces concepts that lead to the development of this plugin
 	- The second video shows how this plugin can be used
 
