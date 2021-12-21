@@ -201,6 +201,7 @@ M.quickProjects = function(config)
 	config = vim.tbl_deep_extend("force", _config.quickProjects, config)
 
 	require("telescope.builtin").live_grep({
+		-- path_display = {"hidden"},
 		prompt_title =  config.prompt_title,
 		cwd = (config.cwd or _config.cwd) .. config.dir,
 

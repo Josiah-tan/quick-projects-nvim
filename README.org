@@ -327,6 +327,13 @@ require('quick_projects').setup(
 })
 #+END_SRC
 
+
+*** Wrap Mode
+- wrap mode can be enabled:
+#+BEGIN_SRC vim
+autocmd User TelescopePreviewerLoaded setlocal wrap
+#+END_SRC
+- This can be helpful when the file paths are really long (for the previewer window)
 * Guidelines For Developers
 
 - first uninstall the plugin (to prevent conflicts)?
