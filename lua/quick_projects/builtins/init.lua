@@ -193,17 +193,17 @@ end
 -- 				~/Desktop/..../elec1103
 -- 			work.txt
 -- 				~/Desktop/..../resumes
-
 M.quickProjects = function(config)
 	-- update config if necessary
 	config = config or {}
 	-- config = vim.tbl_deep_extend("force", _config.quickProjects, config)
 	config = vim.tbl_deep_extend("force", _config.quickProjects, config)
 
-	require("telescope.builtin").live_grep({
+	require("telescope.builtin").grep_string({
 		-- path_display = {"hidden"},
 		prompt_title =  config.prompt_title,
 		cwd = (config.cwd or _config.cwd) .. config.dir,
+		search = '',
 
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickProjects")
@@ -217,9 +217,10 @@ M.quickMarks = function(config)
 	config = config or {}
 	config = vim.tbl_deep_extend("force", _config.quickMarks, config)
 
-	require("telescope.builtin").live_grep({
+	require("telescope.builtin").grep_string({
 		prompt_title =  config.prompt_title,
 		cwd = (config.cwd or _config.cwd) .. (config.dir or _config.generalMarks.dir),
+		search = '',
 		attach_mappings = function(prompt_bufnr, map)
 			selectProject(prompt_bufnr, map, "quickMarks")
 			return true
