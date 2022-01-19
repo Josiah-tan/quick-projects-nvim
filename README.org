@@ -1,7 +1,6 @@
 #+OPTIONS: ^:nil
 * What Is quick-projects-nvim?
 [[file:assets/thumbnail_2.PNG]]
-
 - This is a neovim plugin used to navigate quickly between projects
 - It is designed specifically for tmux
 	- there is partial support for linux terminals (when not in tmux), but this is deprecated
