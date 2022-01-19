@@ -1,6 +1,5 @@
 #+OPTIONS: ^:nil
 * What Is quick-projects-nvim?
-
 [[file:assets/thumbnail_2.PNG]]
 
 - This is a neovim plugin used to navigate quickly between projects
