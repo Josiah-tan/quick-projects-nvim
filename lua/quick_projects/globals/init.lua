@@ -9,9 +9,10 @@ QuickProjectsDebugModeOn = false
 -- 	-- M._config = vim.tbl_deep_extend("force", M._config, config)
 -- end
 
+M = {}
 
 -- for printing lua tables
-P = function(v1, v2)
+M.P = function(v1, v2)
 	local _P = function(v)
 		if type(v) == 'table' then
 			return vim.inspect(v)
@@ -33,14 +34,6 @@ P = function(v1, v2)
 			return v1
 		end
 	end
-end
-
--- re sources luafiles
-RELOAD = function(package_reload)
-	-- so this reloads the imported package, so any updates that you make in the lua file will be shown
-	package.loaded[package_reload] = nil
-	-- and this imports the package
-	return require(package_reload)
 end
 
 return M

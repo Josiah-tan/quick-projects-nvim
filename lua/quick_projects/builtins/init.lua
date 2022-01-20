@@ -1,3 +1,5 @@
+local _globals = require("quick_projects.globals")
+local P = _globals.P
 local _config = require("quick_projects.builtins.config")._config
 -- print(config)
 -- P(_config)
