@@ -92,12 +92,12 @@ end
 local function getWindowName(project_dir)
 	project_dir = compressDirectoryPath(project_dir)
 	-- fixes bug where you try to open a window that has a prefix of another window name
-		-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
-		-- ~/.dotfiles/ (then try opening this)
+	-- ~/.dotfiles/nvim/.vim/ (assume that this is open)
+	-- ~/.dotfiles/ (then try opening this)
 	project_dir = string.format("%s ", project_dir)
 	-- fixes bug where . is a special character for tmux
-		-- ~/.dotfiles/nvim/.vim/ (this is the original)
-		-- ~/.dotfiles/nvim/<dot>vim/ (this is the replaced)
+	-- ~/.dotfiles/nvim/.vim/ (this is the original)
+	-- ~/.dotfiles/nvim/<dot>vim/ (this is the replaced)
 	return vim.fn.substitute(project_dir, "\\.", "<dot>", "g")
 end
 
@@ -128,13 +128,20 @@ local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 	-- tmux gets first priority
 	if tmux.enable and vim.fn.getenv("TMUX") ~= vim.NIL then
 		system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
-	elseif linux_terminal.enable then
+	elseif linux_terminal.enable and vim.fn.getenv("linux") then
 		system_cmd = linuxSystemCmd(linux_terminal.use_tabs, attempt_vim_session, project_dir)
 	end
-	P("exec system_cmd:", system_cmd)
 	if system_cmd then
+		P("exec system_cmd:", system_cmd)
 		local returned = vim.fn.system(system_cmd)
 		P("returned:", returned)
+	else -- change projects in place
+		system_cmd = makeDir(project_dir)
+		P("exec system_cmd:", system_cmd)
+		vim.fn.system(system_cmd)
+		vim.cmd("cd ".. project_dir)
+		vim.cmd("pwd")
+		vim.cmd("e ".. project_dir)
 	end
 	-- P("_config: ", _config)
 	-- P(require("quick_projects.builtins.config")._config)
