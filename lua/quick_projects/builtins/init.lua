@@ -137,7 +137,7 @@ local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 	-- tmux gets first priority
 	if tmux.enable and vim.fn.getenv("TMUX") ~= vim.NIL then
 		system_cmd = tmuxSystemCmd(attempt_vim_session, project_dir, session_name, window_name)
-	elseif linux_terminal.enable and vim.fn.getenv("linux") then
+	elseif linux_terminal.enable and vim.fn.getenv("linux") ~= vim.NIL then
 		system_cmd = linuxSystemCmd(linux_terminal.use_tabs, attempt_vim_session, project_dir)
 	end
 	if system_cmd then
