@@ -119,6 +119,15 @@ local function addQuickMark(file_name, text)
 	end
 end
 
+local function switchInPlace(project_dir)
+	local system_cmd = makeDir(project_dir)
+	P("exec system_cmd:", system_cmd)
+	vim.fn.system(system_cmd)
+	vim.cmd("cd ".. project_dir)
+	vim.cmd("pwd")
+	vim.cmd("e ".. project_dir)
+end
+
 local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 	local session_name = getSessionName(content.filename)
 	local project_dir = content.text
@@ -136,12 +145,7 @@ local function switchSession(tmux, linux_terminal, attempt_vim_session, content)
 		local returned = vim.fn.system(system_cmd)
 		P("returned:", returned)
 	else -- change projects in place
-		system_cmd = makeDir(project_dir)
-		P("exec system_cmd:", system_cmd)
-		vim.fn.system(system_cmd)
-		vim.cmd("cd ".. project_dir)
-		vim.cmd("pwd")
-		vim.cmd("e ".. project_dir)
+		switchInPlace(project_dir)
 	end
 	-- P("_config: ", _config)
 	-- P(require("quick_projects.builtins.config")._config)
